@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proxy Browser</title>
+    <style>
+        body { margin: 0; background: #1a1a1a; color: white; font-family: sans-serif; height: 100vh; display: flex; flex-direction: column; }
+        #controls { padding: 10px; background: #2d2d2d; display: flex; gap: 10px; }
+        input { flex-grow: 1; padding: 10px; border-radius: 5px; border: none; outline: none; }
+        button { padding: 10px 20px; background: #00c7b7; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        iframe { flex-grow: 1; border: none; width: 100%; background: white; }
+        .loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none; }
+    </style>
+</head>
+<body>
+
+<div id="controls">
+    <input type="text" id="urlInput" placeholder="Enter URL (e.g., https://example.com)">
+    <button onclick="loadSite()">Go</button>
+</div>
+
+<iframe id="browserFrame"></iframe>
+<div class="loading" id="loader">Loading...</div>
+
+<script>
+    const urlInput = document.getElementById('urlInput');
+    const frame = document.getElementById('browserFrame');
+    const loader = document.getElementById('loader');
+
+    // Check if we have a URL in the address bar already
+    const params = new URLSearchParams(window.location.search);
+    const targetUrl = params.get('url');
+
+    if (targetUrl) {
+        urlInput.value = targetUrl;
+        loadSite();
+    } else {
+        urlInput.focus();
+    }
+
+    function loadSite() {
+        let url = urlInput.value;
+        if (!url.startsWith('http')) {
+            url = 'https://' + url;
+        }
+        
+        // Update the URL bar so you can share the link
+        window.history.replaceState({}, '', '?url=' + encodeURIComponent(url));
+        
+        loader.style.display = 'block';
+        frame.src = url;
+        
+        frame.onload = () => {
+            loader.style.display = 'none';
+        };
+    }
+</script>
+
+</body>
+</html>
